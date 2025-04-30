@@ -15,14 +15,19 @@ ALTER TABLE employees
 ALTER COLUMN linkedin_profile TYPE TEXT;
 Select * From employees;
 
---  to add unique, not null constraint to linkedin_profile
-ALTER TABLE employees 
-ALTER COLUMN linkedin_profile SET NOT NULL;
+--To update values without Null 
+UPDATE employees
+SET linkedin_profile = 'www.linkedin.com/' || employeename
+WHERE linkedin_profile IS NULL;
 
-	
-ALTER TABLE employees 
-ADD CONSTRAINT linkedin_profile_unique UNIQUE (linkedin_profile);
-Select * From employees;
+SELECT * FROM employees;
+
+---To add Not null and Unique constraints
+Alter Table Employees 
+ALTER COLUMN linkedin_profile SET NOT NULL,
+ADD CONSTRAINT unique_linkedin UNIQUE(linkedin_profile)
+
+SELECT * FROM employees;
 
 -- To drop column linkedin_profile from employees table
 ALTER TABLE employees 
@@ -108,7 +113,7 @@ SELECT
   unitprice
 FROM products
 WHERE discontinued = 0
-  AND unit_price > 30;
+  AND unitprice > 30;
 
 -----------------------------------------------------------------------------------------------------------------
 5)      LIMIT/FETCH
@@ -197,11 +202,14 @@ SELECT * from orders;
   2,
   45.50
   );
+
+  DELETE FROM orders WHERE "orderID" = 11078;
+  SELECT * FROM orders;
  -----------------------------------------------------------------------------------------------------------------
 9)      Increase(Update)  the unit price of all products in category_id =2 by 10%.
 (HINT: unit_price =unit_price * 1.10)
 
- UPDATE products
+UPDATE products
 SET unitprice = unitprice * 1.10
 WHERE categoryid = 2;
 
