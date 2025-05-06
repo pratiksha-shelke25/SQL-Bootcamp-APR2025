@@ -104,8 +104,9 @@ WHERE customerID = 'VINET';
 
 SELECT * FROM orders
 WHERE customerID IS NULL;
-------------------------------------------------------------------------------------------------------------------
- 
+
+
+---------------------------------------------------------------------------------------------------------------
 --5)      Insert the following data to Products using UPSERT:
 product_id = 100, product_name = Wheat bread, quantityperunit=1,unitprice = 13, discontinued = 0, categoryID=5
 product_id = 101, product_name = White bread, quantityperunit=5 boxes,unitprice = 13, discontinued = 0, categoryID=5
@@ -194,12 +195,12 @@ CREATE TEMP TABLE updated_products (
 
 -- To insert sample date into temp TABLE
 
-INSERT INTO updated_products (productid, productname, quantityperunit, unitprice, discontinued, categoryid)
+INSERT INTO updated_products (product_id, productname, quantityperunit, unitprice, discontinued, categoryid)
 VALUES
-(100, 'Wheat bread', '10', 20, 1, 5),
-(101, 'White bread', '5 boxes', 19.99, 0, 5),
-(102, 'Midnight Mango Fizz', '24 - 12 oz bottles', 19, 0, 1),
-(103, 'Savory Fire Sauce', '12 - 550 ml bottles', 10, 0, 2);
+(100, 'Wheat bread', '10', 20, False, 5),
+(101, 'White bread', '5 boxes', 19.99, TRUE, 5),
+(102, 'Midnight Mango Fizz', '24 - 12 oz bottles', 19, TRUE, 1),
+(103, 'Savory Fire Sauce', '12 - 550 ml bottles', 10, TRUE, 2);
 
 
 SELECT * FROM updated_products;
@@ -211,32 +212,32 @@ SET
     unitprice = u.unitprice,
     discontinued = u.discontinued
 FROM updated_products u
-WHERE p.productid = u.productid
+WHERE p.product_id = u.product_id
   AND u.discontinued = 0;
   
 --2. DELETE matching products where discontinued = 1
 
 DELETE FROM products p
 USING updated_products u
-WHERE p.productid = u.productid
+WHERE p.product_id = u.product_id
   AND u.discontinued = 1;
   
 3. INSERT new products where discontinued = 0 and not exists in products
 
-INSERT INTO products (productid, productname, quantityperunit, unitprice, discontinued, categoryid)
+INSERT INTO products (product_id, product_name, quantity_per_unit, unit_price, discontinued, category_id)
 SELECT u.productid, u.productname, u.quantityperunit, u.unitprice, u.discontinued, u.categoryid
 FROM updated_products u
-LEFT JOIN products p ON p.productid = u.productid
+LEFT JOIN products p ON p.product_id = u.product_id
 WHERE p.productid IS NULL
-  AND u.discontinued = 0;
+  AND u.discontinued = TRUE;
 ------------------------------------------------------------------------------------------------------------------
 --7)List all orders with employee full names. (Inner join)
 
 SELECT 
-    o."orderID",
-    o."customerID",
-    o."orderDate",
-    e.employeeid,
-    e.employeename AS employeename
-FROM orders o
-INNER JOIN employees e ON o.employeeid = e.employeeid;
+    Orders.order_id,
+    Orders.order_date,
+    employees.first_name || ' ' || employees.last_name AS EmployeeFullName
+FROM 
+    Orders
+INNER JOIN 
+    Employees ON Orders.employee_id = Employees.employee_id;
